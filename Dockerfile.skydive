@@ -1,0 +1,47 @@
+# For building
+# docker build -f Dockerfile.skydive .
+
+FROM ubuntu:18.04
+
+RUN [ -n "$http_proxy" ] && echo Acquire::http::proxy '"'$http_proxy'";' >> /etc/apt/apt.conf.d/proxy || :
+RUN [ -n "$https_proxy" ] && echo Acquire::https::proxy '"'$https_proxy'";' >> /etc/apt/apt.conf.d/proxy || :
+
+RUN apt-get update; \
+    apt-get install -y --no-install-recommends \
+        golang \
+        golang-gopkg-olivere-elastic.v3-dev  \
+        libpcap-dev \
+        libxml2-dev \
+        protobuf-compiler \
+        llvm \
+        clang \
+        linux-libc-dev \
+        git \
+        ca-certificates \
+        build-essential \
+        golang-goprotobuf-dev \
+        go-bindata \
+        wget ; \
+    rm -rf /var/lib/apt/lists/*
+
+
+ENV http_proxy $http_proxy
+ENV https_proxy $https_proxy
+
+RUN  wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.2.deb && dpkg -i elasticsearch-6.2.2.deb
+
+ENV GOPATH=/gopath
+
+RUN mkdir -p /$GOPATH/src/github.com/skydive-project/skydive/
+
+ADD . /$GOPATH/src/github.com/skydive-project/skydive/
+WORKDIR /$GOPATH/src/github.com/skydive-project/skydive
+
+RUN go get github.com/kardianos/govendor && /$GOPATH/bin/govendor sync
+
+RUN env PATH=$GOPATH/bin:${PATH} make install
+
+CMD ["bash"]
+
+
+
