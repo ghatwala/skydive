@@ -5,31 +5,42 @@ go:
     - 1.9.1
 
 sudo: required
+os:
+    - linux
+#    - linux-ppc64le
 dist: xenial
+services:
+    - docker
+addons:
+    apt:
+        packages:
+            - openvswitch-switch
+            - unzip
+            - build-essential
+            - flex
+            - bison
+            - libxml2-dev
+            - libz-dev
+            - liblzma-dev
+            - libicu-dev
+            - libc++-dev
+            - bridge-utils
+            - libdb5.3-dev
+            - libgraph-easy-perl
+            - screen
+            - inotify-tools
+            - realpath
+            - libnuma-dev
+            - linux-headers
+            - libpcap-dev
+            - protobuf-compiler
 
 before_install:
-    - sudo apt-get -qq update
-    - sudo apt-get install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y openvswitch-switch unzip docker.io build-essential flex bison libxml2-dev libz-dev liblzma-dev libicu-dev libc++-dev bridge-utils libdb5.3-dev libgraph-easy-perl screen inotify-tools realpath libnuma-dev linux-headers-$(uname -r)
     - sudo ovs-vsctl show
     - sudo iptables -F
     - for i in $(find /proc/sys/net/bridge/ -type f) ; do echo 0 | sudo tee $i ; done
     - go get github.com/mattn/goveralls
     - go get golang.org/x/tools/cmd/cover
-
-    - git clone https://github.com/the-tcpdump-group/libpcap.git
-    - cd libpcap
-    - git checkout libpcap-1.5.3
-    - ./configure --prefix=/usr/local --disable-shared --disable-dbus --disable-bluetooth --disable-canusb
-    - make
-    - sudo make install
-    - cd ..
-
-    - mkdir ${HOME}/protoc
-    - pushd ${HOME}/protoc
-    - wget https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
-    - unzip protoc-3.1.0-linux-x86_64.zip
-    - popd
-    - export PATH=${HOME}/protoc/bin:${PATH}
 
 script:
     - export BUILD_TAG=$(date +%Y-%m-%d).${TRAVIS_JOB_NUMBER}
@@ -58,3 +69,5 @@ script:
     - git config credential.helper "store --file=.git/credentials"
     - echo "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com" > .git/credentials
     - git push -f -q binaries travis-builds
+
+# vim:set et ts=4 sw=4
