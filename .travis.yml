@@ -116,7 +116,7 @@ after_success:
 before_deploy:
     - git config --global user.email "builds@travis-ci.com"
     - git config --global user.name "Travis CI"
-    - make DESTDIR= SKYDIVE_PKG=skydive-${TRAVIS_OS_NAME}-${TRAVIS_TAG} localdist
+    - make DESTDIR=$HOME SKYDIVE_PKG=skydive-${TRAVIS_OS_NAME}-${TRAVIS_TAG} localdist
 
 # WIP https://docs.travis-ci.com/user/deployment/releases/
 deploy:
@@ -125,7 +125,7 @@ deploy:
     api_key: ${GITHUB_TOKEN}
     file:
         - skydive-${TRAVIS_OS_NAME}
-        - skydive-${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
+        - ${HOME}/skydive-${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
     skip_cleanup: true
     on:
         tags: true
