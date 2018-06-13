@@ -160,8 +160,9 @@ jobs:
            docker manifest push    "${MANIFEST}"
            if [ -n "${TRAVIS_TAG}" ]
            then
-             docker tag ${MANIFEST} ${DOCKER_IMAGE}:latest
-             docker push ${DOCKER_IMAGE}:latest
+             docker manifest create  ${DOCKER_IMAGE}:latest "${MANIFEST}_x86_64" "${MANIFEST}_ppc64le"
+             docker manifest inspect ${DOCKER_IMAGE}:latest
+             docker manifest push    ${DOCKER_IMAGE}:latest
            fi
          fi
       after_success: true
