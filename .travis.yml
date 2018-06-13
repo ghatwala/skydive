@@ -121,7 +121,7 @@ before_deploy:
 # WIP https://docs.travis-ci.com/user/deployment/releases/
 deploy:
     provider: releases
-    user: ${GITHUB_USERNAME}
+    user: ${TRAVIS_REPO_SLUG%/*}
     api_key: ${GITHUB_TOKEN}
     file:
         - skydive-${TRAVIS_OS_NAME}
