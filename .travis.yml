@@ -7,7 +7,7 @@ go:
 sudo: false
 os:
     - linux-ppc64le
-    - linux
+#    - linux
 dist: xenial
 services:
     - docker
